@@ -38,6 +38,7 @@ while is_on:
         # If can_make = True, ask users to pay money
         if can_make is True:
             cost = drink.cost
+            print(f"A {choice} costs ${cost}.")
             # Process payment
             payment_successful = money_machine.make_payment(cost)
             # Make coffee if payment is successful

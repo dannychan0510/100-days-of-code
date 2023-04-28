@@ -12,12 +12,12 @@ class Scoreboard(Turtle):
         self.hideturtle()  # Hide the turtle cursor
         self.penup()  # Lift the pen to prevent drawing
         self.setposition(0, 270)  # Set the initial position of the scoreboard
-        self.pencolor("white")  # Set the text color to white
         self.score = 0  # Initialize the score to 0
         self.print_score()  # Call the print_score method to display the initial score
 
     # Method to display the current score on the screen
-    def print_score(self):
+    def print_score(self, color="white"):
+        self.pencolor(color)  # Set the text color to white
         self.write(f"Current score: {self.score}", align=ALIGNMENT, font=FONT)
 
     # Method to increase the score by 1

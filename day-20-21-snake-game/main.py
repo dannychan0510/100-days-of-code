@@ -13,16 +13,28 @@ screen.tracer(0)
 
 # Create snake, food, and scoreboard objects
 snake = Snake()
-food = Food()
+food = Food(snake)
 scoreboard = Scoreboard()
+last_key_press_time = 0  # Store the time of the last key press
+
+# Define a wrapper function to handle key press events
+def on_key_press(func):
+    global last_key_press_time
+    current_time = time.time()
+
+    # Check if the time since the last key press is greater than 0.1 seconds
+    if current_time - last_key_press_time > 0.1:
+        func()
+        last_key_press_time = current_time
+
 
 # Listen for keyboard input
 screen.listen()
-# Assign keys to snake direction changes
-screen.onkey(snake.up, "Up")
-screen.onkey(snake.down, "Down")
-screen.onkey(snake.left, "Left")
-screen.onkey(snake.right, "Right")
+# Assign keys to snake direction changes with the on_key_press wrapper function
+screen.onkey(lambda: on_key_press(snake.up), "Up")
+screen.onkey(lambda: on_key_press(snake.down), "Down")
+screen.onkey(lambda: on_key_press(snake.left), "Left")
+screen.onkey(lambda: on_key_press(snake.right), "Right")
 
 # Initialize game loop
 game_is_on = True
@@ -30,7 +42,6 @@ game_is_on = True
 while game_is_on:
     screen.update()  # Update the screen
     time.sleep(0.1)  # Control the speed of the game
-
     snake.move()  # Move the snake
 
     # Detect collision with food

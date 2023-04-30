@@ -1,6 +1,7 @@
 from turtle import Screen
 from paddle import Paddle
 from ball import Ball
+from scoreboard import Scoreboard
 import time
 
 # Set up the screen
@@ -17,6 +18,9 @@ l_paddle = Paddle((-350, 0))
 # Create a ball
 ball = Ball()
 
+# Create scoreboard
+scoreboard = Scoreboard()
+
 # Listen for keyboard input
 screen.listen()
 
@@ -30,17 +34,33 @@ screen.onkeypress(l_paddle.down, "a")
 game_is_on = True
 
 while game_is_on:
-    time.sleep(0.1)
+
+    # Update ball.prev_y before moving the ball
+    ball.prev_x = ball.xcor()
+
+    # Move ball
+    time.sleep(ball.move_speed)
     screen.update()
     ball.move()
 
     # Detect collision with top and bottom walls
-    if abs(ball.ycor()) > 280:
+    if ball.collide_with_wall():
         ball.bounce_y()
 
     # Detect collision with paddle
     if ball.collide_with_paddle(l_paddle) or ball.collide_with_paddle(r_paddle):
         ball.bounce_x()
+        ball.increase_move_speed()
+
+    # Detect if ball is out of bounds on the right side
+    if ball.r_out_of_bounds():
+        scoreboard.l_point()
+        ball.reset_ball()
+
+    # Detect if ball is out of bounds on the left side
+    if ball.l_out_of_bounds():
+        scoreboard.r_point()
+        ball.reset_ball()
 
 # Set screen to exit only on click
 screen.exitonclick()

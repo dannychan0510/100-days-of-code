@@ -32,13 +32,8 @@ class Scoreboard(Turtle):
         self.score += 1  # Increment the score by 1
         self.print_score()  # Call the print_score method to display the updated score
 
-    # def game_over(self):
-    #     self.goto(0, 0)
-    #     self.write("GAME OVER", align=ALIGNMENT, font=FONT)
-
     def reset(self):
         if self.score > self.highscore:
-
             # Update highscore attribute
             self.highscore = self.score
 

@@ -17,6 +17,7 @@ food = Food(snake)
 scoreboard = Scoreboard()
 last_key_press_time = 0  # Store the time of the last key press
 
+
 # Define a wrapper function to handle key press events
 def on_key_press(func):
     global last_key_press_time
@@ -52,14 +53,18 @@ while game_is_on:
 
     # Detect collision with wall
     if abs(snake.head.xcor()) > 280 or abs(snake.head.ycor()) > 280:
-        game_is_on = False
-        scoreboard.game_over()  # Display "Game Over" message
+        scoreboard.reset()  # Display "Game Over" message
+        snake.reset()
+        screen.update()
+        time.sleep(1.0)
 
     # Detect collision with tail
     for segment in snake.segments[1:]:
         if snake.head.distance(segment) < 5:
-            game_is_on = False
-            scoreboard.game_over()  # Display "Game Over" message
+            scoreboard.reset()  # Display "Game Over" message
+            snake.reset()
+            screen.update()
+            time.sleep(1.0)
 
 # Keep the screen open until it's clicked
 screen.exitonclick()

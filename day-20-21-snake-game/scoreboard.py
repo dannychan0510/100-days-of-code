@@ -6,6 +6,7 @@ FONT = ('Courier', 24, 'normal')
 
 # Define a class Scoreboard that inherits from Turtle
 class Scoreboard(Turtle):
+
     # Initialize the Scoreboard object
     def __init__(self):
         super().__init__()  # Call the parent class constructor
@@ -32,6 +33,7 @@ class Scoreboard(Turtle):
         self.score += 1  # Increment the score by 1
         self.print_score()  # Call the print_score method to display the updated score
 
+    # Method to reset score and update high score if achieved after a game ends
     def reset(self):
         if self.score > self.highscore:
             # Update highscore attribute

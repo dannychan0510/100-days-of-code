@@ -23,7 +23,7 @@ correct_answers = []
 while len(correct_answers) < len(data["state"]):
     # Prompt the user to input a state name, and convert to title case
     answer_state = screen.textinput(title=f"{len(correct_answers)} / {len(data['state'])} correct",
-                                    prompt="What's another state's name?").title()
+                                    prompt="What's another state's name?\n Type 'Exit' to end game.").title()
 
     if answer_state == "Exit":
         break
@@ -53,6 +53,5 @@ with open("states_to_learn.csv", mode="w") as f:
     f.write(f"\n")
     f.write(f"Missed states: {len(data['state']) - len(correct_answers)} / {len(data['state'])}\n")
 
-    for state in data["state"].to_list():
-        if state not in sorted(correct_answers):
-            f.write(f"{state}\n")
+    missed_states = [state for state in data["state"].to_list() if state not in correct_answers]
+    f.write('\n'.join(sorted(missed_states)))

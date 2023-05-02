@@ -1,4 +1,4 @@
-# U.S. States Game
+# Day 25: U.S. States Game
 
 The U.S. States Game is a simple educational game that tests your knowledge of 
 U.S. state names. The program displays a map of the United States with empty 

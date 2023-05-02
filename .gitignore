@@ -1,0 +1,26 @@
+# PyCharm and JetBrains IDEs
+**/.idea
+*.iml
+
+# Python virtual environment
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# pytest cache
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Other temporary files
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*.sqlite
+*.db
+*.retry

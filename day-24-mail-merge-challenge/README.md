@@ -16,3 +16,6 @@ This script will read a list of names and addresses from a file, and then create
 * How to access directories in Python
 * How to use string formatting to personalize a letter
 
+---
+
+Disclaimer: This README is generated with the help of ChatGPT-4.

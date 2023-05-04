@@ -37,3 +37,7 @@ This program demonstrates the following Python concepts:
 4. Run the program with `python us_states_game.py` (or `python3 us_states_game.py` 
    on some systems).
 5. Start guessing state names. Type "Exit" to end the game early.
+
+---
+
+Disclaimer: This README is generated with the help of ChatGPT-4.

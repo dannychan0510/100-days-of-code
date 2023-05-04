@@ -13,7 +13,7 @@ label.pack()
 def action():
     print("Do something")
 
-button = tk.Button(text="Click Me", command=action)
+button = t
 button.pack()
 
 # Entries

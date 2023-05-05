@@ -24,14 +24,14 @@ To run the Pomodoro Timer program, follow these steps:
 
 1. Ensure that you have Python 3 installed on your system. You can download it from the [official Python website](https://www.python.org/downloads/).
 
-2. Download the `pomodoro_timer.py` file, and if necessary, the `tomato.png` image file (if the application uses an image for the timer background).
+2. Download the `main.py` file, and if necessary, the `tomato.png` image file (if the application uses an image for the timer background).
 
-3. Open a terminal or command prompt, and navigate to the directory containing the `pomodoro_timer.py` file.
+3. Open a terminal or command prompt, and navigate to the directory containing the `main.py` file.
 
 4. Run the following command to start the Pomodoro Timer application:
 
 ```bash
-python3 pomodoro_timer.py
+python3 main.py
 ```
 
 ---

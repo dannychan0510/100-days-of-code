@@ -33,8 +33,8 @@ This program demonstrates the following Python concepts:
 1. Install Python 3.x if you haven't already.
 2. Install the required libraries by running `pip install pandas turtle`.
 3. Download the `blank_states_img.gif` and `50_states.csv` files and place them 
-   in the same directory as the program.
-4. Run the program with `python us_states_game.py` (or `python3 us_states_game.py` 
+   in the same directory as the program `main.py`.
+4. Run the program with `python main.py` (or `python3 main.py` 
    on some systems).
 5. Start guessing state names. Type "Exit" to end the game early.
 

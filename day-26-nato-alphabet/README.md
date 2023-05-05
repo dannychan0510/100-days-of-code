@@ -22,9 +22,9 @@ I learnt the following Python concepts through this project:
 1. Install Python 3.x if you haven't already.
 2. Install the required library by running `pip install pandas`.
 3. Download the `nato_phonetic_alphabet.csv` file and place it in the same 
-   directory as the program.
-4. Run the program with `python nato_phonetic_converter.py` (or 
-   `python3 nato_phonetic_converter.py` on some systems).
+   directory as the program `main.py`.
+4. Run the program with `python main.py` (or 
+   `python3 main.py` on some systems).
 5. Enter a word when prompted, and the program will output the NATO phonetic 
    alphabet representation of the word.
 

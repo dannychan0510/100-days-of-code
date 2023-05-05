@@ -20,9 +20,9 @@ learned:
 To run the Miles to Km Converter application, follow these steps:
 
 1. Make sure you have Python installed on your computer. This program is compatible with Python 3.6 or higher.
-2. Save the code above in a file named `miles_to_km_converter.py`.
-3. Run the program with `python miles_to_km_converter.py` (or
-   `python3 miles_to_km_converter.py` on some systems). Make sure you use the `cd` command to change the working
+2. Save the `main.py` into your working director.
+3. Run the program with `python main.py` (or
+   `python3 main.py` on some systems). Make sure you use the `cd` command to change the working
    directory to where you saved the program.
 
 ---

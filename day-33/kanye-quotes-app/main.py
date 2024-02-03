@@ -3,7 +3,9 @@ import requests
 
 # Function to get a quote from the Kanye REST API and update the quote text on the canvas.
 def get_quote():
-    quote = requests.get(url="http://api.kanye.rest").json()['quote']
+    response = requests.get(url="http://api.kanye.rest").json()['quote']
+    response.raise_for_status()
+    quote = response.json()['quote']
     canvas.itemconfig(quote_text, text=quote)
 
 # Create the main window

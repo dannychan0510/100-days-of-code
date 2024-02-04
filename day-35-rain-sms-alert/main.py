@@ -11,6 +11,8 @@ MY_LONG = 5.6
 weather_api_key = os.environ['API_KEY']
 twilio_account_sid = os.environ['TWILIO_ACCOUNT_SID']
 twilio_auth_token = os.environ['TWILIO_AUTH_TOKEN']
+sender_phone_number = os.environ['SENDER_PHONE_NUMBER']
+recipient_phone_number = os.environ['RECIPIENT_PHONE_NUMBER']
 
 # Set the API endpoint
 api_endpoint = f'https://api.openweathermap.org/data/2.5/forecast'
@@ -43,8 +45,8 @@ if any(id < 700 for id in weather_ids):
     message = client.messages \
                     .create(
                         body="It's going to rain today. Remember to bring an ☂️.",
-                        from_='***REMOVED***',
-                        to='***REMOVED***'
+                        from_=sender_phone_number,
+                        to=recipient_phone_number
                     )
 
     # Print the message status

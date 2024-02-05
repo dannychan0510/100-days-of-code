@@ -18,7 +18,7 @@ recipient_phone_number = os.environ['RECIPIENT_PHONE_NUMBER']
 api_endpoint = f'https://api.openweathermap.org/data/2.5/forecast'
 
 # Set the parameters for the API request
-parameters = {'lat': MY_LAT, 'lon': MY_LONG, 'appid': API_KEY, 'cnt': 4}
+parameters = {'lat': MY_LAT, 'lon': MY_LONG, 'appid': weather_api_key, 'cnt': 4}
 
 # Make the API request
 response = requests.get(api_endpoint, params=parameters)
@@ -39,7 +39,7 @@ for forecast in data['list']:
 # https://openweathermap.org/weather-conditions
 if any(id < 700 for id in weather_ids):
     # Initialize the Twilio client
-    client = Client(account_sid, auth_token)
+    client = Client(twilio_account_sid, twilio_auth_token)
 
     # Create and send the message
     message = client.messages \

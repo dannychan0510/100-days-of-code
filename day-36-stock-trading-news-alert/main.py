@@ -1,76 +1,85 @@
 import os
 import requests
 import datetime as dt
+from unidecode import unidecode
+from twilio.rest import Client
 
-
-STOCK = "TSLA"
-COMPANY_NAME = "Tesla Inc"
+# Define constants
+STOCK = "GOOG"
+COMPANY_NAME = "Google"
 
 STOCK_ENDPOINT = "https://www.alphavantage.co/query"
-NEWS_ENDPOINT = "https://newsapi.org/v2/everything"
+STOCK_API_KEY = os.environ["STOCK_API_KEY"]
 
-STOCK_API_KEY = os.environ['STOCK_API_KEY']
-NEWS_API_KEY = os.environ['NEWS_API_KEY']
+NEWS_ENDPOINT = "https://api.marketaux.com/v1/news/all"
+NEWS_API_KEY = os.environ["MARKETAUX_API_KEY"]
 
-date_today = dt.datetime.now().strftime('%Y-%m-%d')
-date_yesterday = (dt.datetime.now() - dt.timedelta(days=1)).strftime('%Y-%m-%d')
-date_two_days_ago = (dt.datetime.now() - dt.timedelta(days=2)).strftime('%Y-%m-%d')
+TWILIO_ACCOUNT_SID = os.environ["TWILIO_ACCOUNT_SID"]
+TWILIO_AUTH_TOKEN = os.environ["TWILIO_AUTH_TOKEN"]
+SENDER_PHONE_NUMBER = os.environ["SENDER_PHONE_NUMBER"]
+RECIPIENT_PHONE_NUMBER = os.environ["RECIPIENT_PHONE_NUMBER"]
 
+# Calculate dates
+date_today = dt.datetime.now().strftime("%Y-%m-%d")
+date_yesterday = (dt.datetime.now() - dt.timedelta(days=1)).strftime("%Y-%m-%d")
+date_two_days_ago = (dt.datetime.now() - dt.timedelta(days=2)).strftime("%Y-%m-%d")
+
+# Define parameters for API requests
 stock_params = {
-    'function': 'TIME_SERIES_DAILY',
-    'symbol': STOCK,
-    'apikey': STOCK_API_KEY
+    "function": "TIME_SERIES_DAILY",
+    "symbol": STOCK,
+    "apikey": STOCK_API_KEY,
 }
 
 news_params = {
-    'q': COMPANY_NAME,
-    'searchIn': 'title,description',
-    'from': date_yesterday,
-    'to': date_today,
-    'language': 'en',
-    'sortBy': 'relevancy',
-    'apiKey': NEWS_API_KEY,
-    'pageSize': 10,
-    'page': 1
+    "api_token": NEWS_API_KEY,
+    "symbols": STOCK,
+    "search": COMPANY_NAME,
+    "filter_entities": "true",
+    "language": "en",
+    "published_after": date_two_days_ago,
+    "published_before": date_today,
+    "sort": "entity_match_score",
 }
 
-## STEP 1: Use https://newsapi.org/docs/endpoints/everything
-# When STOCK price increase/decreases by 5% between yesterday and the day before yesterday then print("Get News").
-#HINT 1: Get the closing price for yesterday and the day before yesterday. Find the positive difference between the two prices. e.g. 40 - 20 = -20, but the positive difference is 20.
-#HINT 2: Work out the value of 5% of yesterday's closing stock price. 
+# Fetch stock data
+r = requests.get(STOCK_ENDPOINT, params=stock_params)
+r.raise_for_status()
+data = r.json()["Time Series (Daily)"]
 
-# r = requests.get(STOCK_ENDPOINT, params=stock_params)
-# r.raise_for_status()
-# data = r.json()['Time Series (Daily)']
+# Calculate percentage change in stock price
+closing_price_yesterday = float(data[date_yesterday]["4. close"])
+closing_price_two_days_ago = float(data[date_two_days_ago]["4. close"])
+pct_change = (
+    closing_price_yesterday - closing_price_two_days_ago
+) / closing_price_two_days_ago
 
-
-# closing_price_yesterday = float(data[date_yesterday]['4. close'])
-# closing_price_two_days_ago = float(data[date_two_days_ago]['4. close'])
-
-# pct_change = abs((closing_price_yesterday - closing_price_two_days_ago) / closing_price_two_days_ago)
-
-## STEP 2: Use https://newsapi.org/docs/endpoints/everything
-# Instead of printing ("Get News"), actually fetch the first 3 articles for the COMPANY_NAME. 
-#HINT 1: Think about using the Python Slice Operator
-
+# Fetch news data
+snippets = []
 r = requests.get(NEWS_ENDPOINT, params=news_params)
 r.raise_for_status()
-data = r.json()
+articles = r.json()["data"]
+for a in articles:
+    cleaned_title = unidecode(a["title"])
+    cleaned_description = unidecode(a["description"])
+    snippets.append(f"Headline: {cleaned_title}\nBrief: {cleaned_description}")
 
-## STEP 3: Use twilio.com/docs/sms/quickstart/python
-# Send a separate message with each article's ca and description to your phone number. 
-#HINT 1: Consider using a List Comprehension.
+# Send SMS for each news snippet if stock price change is significant (+/-2.5%)
+if abs(pct_change) >= 0.025 and len(snippets) > 0:
+    for s in snippets:
+        # Format message
+        price_snippet = (
+            f'{STOCK}: {"🔺" if pct_change >= 0 else "🔻"}{abs(pct_change):.2%}'
+        )
+        message_text = f"{price_snippet}\n\n{s}"
 
+        # Initialize the Twilio client
+        client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
+        # Create and send the message
+        message = client.messages.create(
+            body=message_text, from_=SENDER_PHONE_NUMBER, to=RECIPIENT_PHONE_NUMBER
+        )
 
-#Optional: Format the SMS message like this: 
-"""
-TSLA: 🔺2%
-Headline: Were Hedge Funds Right About Piling Into Tesla Inc. (TSLA)?. 
-Brief: We at Insider Monkey have gone over 821 13F filings that hedge funds and prominent investors are required to file by the SEC The 13F filings show the funds' and investors' portfolio positions as of March 31st, near the height of the coronavirus market crash.
-or
-"TSLA: 🔻5%
-Headline: Were Hedge Funds Right About Piling Into Tesla Inc. (TSLA)?. 
-Brief: We at Insider Monkey have gone over 821 13F filings that hedge funds and prominent investors are required to file by the SEC The 13F filings show the funds' and investors' portfolio positions as of March 31st, near the height of the coronavirus market crash.
-"""
-
+        # Print the message status
+        print(message)

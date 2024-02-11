@@ -11,7 +11,7 @@ SHEETY_PW = os.environ["SHEETY_PW"]
 
 # Define API endpoints
 nl_exercise_endpoint = "https://trackapi.nutritionix.com/v2/natural/exercise"
-sheety_endpoint = "https://api.sheety.co/2629490a2bce2089b8b8dd37ff5689f3/workoutTracker (100DaysOfPython)/workoutTracker"
+sheety_endpoint = "https://api.sheety.co/2629490a2bce2089b8b8dd37ff5689f3/workoutTracker/workoutTracker"
 
 # Define headers for API requests
 nutritionix_headers = {"x-app-id": APP_ID, "x-app-key": API_KEY}

@@ -53,3 +53,16 @@ class FlightData:
 
         # Return the populated DataFrame
         return self.flights_df
+
+    def find_cheapest_flight(self, data_df):
+        # Sort the DataFrame by price in ascending order
+        data_df = data_df.sort_values("price")
+
+        # Drop duplicates based on the 'outbound_date' column
+        data_df = data_df.drop_duplicates(subset="outbound_date")
+
+        # Get the cheapest flight
+        self.cheapest_flight = data_df.iloc[0]
+
+        # Get the total number of cheap flights
+        self.total_flights = len(data_df)

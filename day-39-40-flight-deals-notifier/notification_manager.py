@@ -52,7 +52,7 @@ class NotificationManager:
             message_text += (
                 f"There are also {self.flight_data.total_flights} other cheap flights from "
                 f"{self.flight_data.cheapest_flight['departure_city']} to {self.flight_data.cheapest_flight['arrival_city']} found between "
-                f"{FlightSearch.date_tmr} to {FlightSearch.date_in_six_months}.\n"
+                f"{self.flight_search.date_tmr} to {self.flight_search.date_in_six_months}.\n"
             )
         return message_text
 

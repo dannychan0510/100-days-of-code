@@ -1,48 +1,34 @@
-# This file will need to use the DataManager,FlightSearch, FlightData, NotificationManager
-# classes to achieve the program requirements.
-
-import requests
+# Import necessary modules
+import os
 from pprint import pprint
+import requests
+import pandas as pd
 from data_manager import DataManager
 from flight_data import FlightData
 from flight_search import FlightSearch
 from notification_manager import NotificationManager
 
-# TODO read data
+# Instantiate classes
+DataManager = DataManager()
+FlightSearch = FlightSearch()
+FlightData = FlightData()
+NotificationManager = NotificationManager()
 
-# Read in data from sheets
-test = DataManager()
-test2 = FlightSearch()
+# Sample data for testing
+data = DataManager.get_data()
 
-# data = test.get_data()
-# print(data)
+# Loop through each city in the data
+for row in data["prices"]:
+    # If the city doesn't have an IATA code, fetch it
+    if row["iataCode"] == "":
+        row["iataCode"] = FlightSearch.get_iata_code(row["city"])
+        DataManager.edit_row(row["id"], row)
 
-data = {
-    "prices": [
-        {"city": "Paris", "iataCode": "", "lowestPrice": 54, "id": 2},
-        {"city": "Berlin", "iataCode": "", "lowestPrice": 42, "id": 3},
-        {"city": "Tokyo", "iataCode": "", "lowestPrice": 485, "id": 4},
-        {"city": "Sydney", "iataCode": "", "lowestPrice": 551, "id": 5},
-        {"city": "Istanbul", "iataCode": "", "lowestPrice": 95, "id": 6},
-        {"city": "Kuala Lumpur", "iataCode": "", "lowestPrice": 414, "id": 7},
-        {"city": "New York", "iataCode": "", "lowestPrice": 240, "id": 8},
-        {"city": "San Francisco", "iataCode": "", "lowestPrice": 260, "id": 9},
-        {"city": "Cape Town", "iataCode": "", "lowestPrice": 378, "id": 10},
-    ]
-}
+    # Search for flights for the city
+    flight_data = FlightSearch.search_flights(row["iataCode"], row["lowestPrice"])
 
-# pprint(data)
+    # Populate the DataFrame with the flight data
+    data_df = FlightData.populate_flights_df(flight_data)
 
-# TODO search IATA codes for from kiwi API
-for row in data['prices']:
-    if row['iataCode'] == '':
-        row['iataCode'] = test2.get_iata_code(row['city'])
-
-# TODO add IATA codes to data
-
-
-# TODO write IATA codes back to sheet
-
-
-# TODO search 
-
+    # Send a notification with the flight data
+    NotificationManager.send_message(data_df)

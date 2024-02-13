@@ -14,7 +14,7 @@ FlightSearch = FlightSearch()
 FlightData = FlightData()
 NotificationManager = NotificationManager()
 
-# Sample data for testing
+# Get data from Google Sheets
 data = DataManager.get_data()
 
 # Loop through each city in the data

@@ -1,6 +1,5 @@
 import os
 from twilio.rest import Client
-from flight_data import FlightData
 from flight_search import FlightSearch
 
 # Load environment variables
@@ -20,39 +19,35 @@ class NotificationManager:
         self.sender_phone_number = SENDER_PHONE_NUMBER
         self.recipient_phone_number = RECIPIENT_PHONE_NUMBER
 
-        # Initialize FlightData and FlightSearch objects
-        self.flight_data = FlightData()
+        # Initialize FlightSearch objects
         self.flight_search = FlightSearch()
 
-    def send_message(self, data_df):
+    def send_message(self, flight_data):
         # Check if there are any flights
-        if len(data_df) > 0:
-            # Find the cheapest flight
-            self.flight_data.find_cheapest_flight(data_df)
+        if flight_data is not None:
 
             # Format the flight into a message
-            message_text = self.format_message()
+            message_text = self.format_message(flight_data)
 
             # Send the message
             self.send_twilio_message(message_text)
 
-    def format_message(self):
+    def format_message(self, flight_data):
         # Format the flight data into a message
         message_text = "Low price alert!\n"
         message_text += (
-            f"Cheapest flight from {self.flight_data.cheapest_flight['departure_city']} "
-            f"({self.flight_data.cheapest_flight['departure_airport']}) to "
-            f"{self.flight_data.cheapest_flight['arrival_city']} "
-            f"({self.flight_data.cheapest_flight['arrival_airport']})\n"
-            f"Outbound date and time: {self.flight_data.cheapest_flight['outbound_date'].strftime('%d %b %Y at %I:%M%p')}\n"
-            f"Return date and time: {self.flight_data.cheapest_flight['inbound_date'].strftime('%d %b %Y at %I:%M%p')}\n"
-            f"Price: ¥{self.flight_data.cheapest_flight['price']:,}\n"
-        )
-        if self.flight_data.total_flights > 1:
+                f"Cheapest flight from {flight_data.origin_city} "
+                f"({flight_data.origin_airport}) to "
+                f"{flight_data.destination_city} "
+                f"({flight_data.destination_airport})\n"
+                f"Outbound date and time: {flight_data.out_date.strftime('%d %b %Y at %I:%M%p')}\n"
+                f"Return date and time: {flight_data.return_date.strftime('%d %b %Y at %I:%M%p')}\n"
+                f"Price: ¥{flight_data.price:,}\n"
+            )        
+        if flight_data.stop_overs > 0:
             message_text += (
-                f"There are also {self.flight_data.total_flights} other cheap flights from "
-                f"{self.flight_data.cheapest_flight['departure_city']} to {self.flight_data.cheapest_flight['arrival_city']} found between "
-                f"{self.flight_search.date_tmr} to {self.flight_search.date_in_six_months}.\n"
+                f"\nFlight has {flight_data.stop_overs} stop over, "
+                f"via {flight_data.via_city}-{flight_data.via_airport}."
             )
         return message_text
 

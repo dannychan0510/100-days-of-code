@@ -1,13 +1,15 @@
+# Import necessary modules
 import os
 import requests
+from pprint import pprint
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+from flight_data import FlightData
 
 # Load environment variables
 KIWI_API_KEY = os.environ["KIWI_API_KEY"]
-KIWI_LLOCATIONS_ENDPOINT = "https://api.tequila.kiwi.com/locations/query"
+KIWI_LOCATIONS_ENDPOINT = "https://api.tequila.kiwi.com/locations/query"
 KIWI_SEARCH_ENDPOINT = "https://api.tequila.kiwi.com/v2/search"
-
 
 class FlightSearch:
     # This class is responsible for talking to the Flight Search API.
@@ -20,22 +22,16 @@ class FlightSearch:
         # Calculate dates for flight search
         self.today = datetime.now()
         self.date_tmr = (self.today + timedelta(days=1)).strftime("%d/%m/%Y")
-        self.date_in_six_months = (self.today + relativedelta(months=6)).strftime(
-            "%d/%m/%Y"
-        )
+        self.date_in_six_months = (self.today + relativedelta(months=6)).strftime("%d/%m/%Y")
 
     def get_iata_code(self, city_name):
         # Get the IATA code for a city
-        self.params = {"term": city_name}
-        r = requests.get(
-            url=KIWI_LLOCATIONS_ENDPOINT, params=self.params, headers=self.headers
-        )
-        r.raise_for_status()
-        return r.json()["locations"][0]['code']
+        self.location_params = {"term": city_name}
+        return self._make_request(KIWI_LOCATIONS_ENDPOINT, self.location_params)["locations"][0]["id"]
 
     def search_flights(self, destination_city, price_to):
         # Search for flights to a destination city
-        params = {
+        self.search_params = {
             "fly_from": "city:TYO",
             "fly_to": f"city:{destination_city}",
             "date_from": self.date_tmr,
@@ -45,16 +41,48 @@ class FlightSearch:
             "max_stopovers": 0,
             "curr": "JPY",
             "price_to": price_to,
+            "one_for_city": 1,
         }
 
         print(f"Check flights triggered for {destination_city}")
 
+        # Try to get flight data
         try:
-            r = requests.get(url=KIWI_SEARCH_ENDPOINT, params=params, headers=self.headers)
+            data = self._make_request(KIWI_SEARCH_ENDPOINT, self.search_params)["data"][0]
+            # pprint(data)
+        except IndexError:
+            # If no direct flights found, try to find flights with one stopover
+            self.search_params["max_stopovers"] = 1
+            try:
+                data = self._make_request(KIWI_SEARCH_ENDPOINT, self.search_params)["data"][0]
+                # pprint(data)
+            except IndexError:
+                return None
+            pass
+        
+        return self._create_flight_data(data, self.search_params["max_stopovers"])
+
+    def _make_request(self, url, params):
+        try:
+            r = requests.get(url, params=params, headers=self.headers)
             r.raise_for_status()
-            n_flights_found = len(r.json()['data'])
-            print(f'{n_flights_found} flights found for {destination_city}')
             return r.json()
         except requests.exceptions.HTTPError:
-            print(f'No flights found for {destination_city}')            
-            return 'None'
+            print(f"HTTPError: {params['fly_to']} cannot be proceesed.")
+            return None
+
+    def _create_flight_data(self, data, stop_overs):
+        # Create FlightData object
+        return FlightData(
+            price=data["price"],
+            origin_city=data["cityCodeFrom"],
+            origin_airport=data["flyFrom"],
+            destination_city=data["cityCodeTo"],
+            destination_airport=data["flyTo"],
+            out_date=datetime.strptime(data["route"][0]["local_departure"], "%Y-%m-%dT%H:%M:%S.%fZ"),
+            return_date=datetime.strptime(data["route"][stop_overs + 1]["local_departure"], "%Y-%m-%dT%H:%M:%S.%fZ"),
+            stop_overs=stop_overs,
+            via_city=data["route"][0]["cityCodeTo"] if stop_overs else None,
+            via_airport=data["route"][0]["flyTo"] if stop_overs else None,
+        )
+        

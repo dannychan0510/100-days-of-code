@@ -11,11 +11,19 @@ from notification_manager import NotificationManager
 # Instantiate classes
 DataManager = DataManager()
 FlightSearch = FlightSearch()
-FlightData = FlightData()
 NotificationManager = NotificationManager()
 
 # Sample data for testing
-data = DataManager.get_data()
+# data = DataManager.get_data()
+data = {
+    "prices": [
+        # {"city": "New York", "iataCode": "NYC", "lowestPrice": 200000, "id": 1},
+        {"city": "London", "iataCode": "LON", "lowestPrice": 200000, "id": 2},
+        # {"city": "Hong Kong", "iataCode": "HKG", "lowestPrice": 50000, "id": 3},
+        # {"city": "Bangkok", "iataCode": "BKK", "lowestPrice": 50000, "id": 4},
+        # {"city": "Bali", "iataCode": "DPS", "lowestPrice": 600000, "id": 5},
+    ]
+}
 
 # Loop through each city in the data
 for row in data["prices"]:
@@ -26,12 +34,8 @@ for row in data["prices"]:
 
     # Search for flights for the city
     flight_data = FlightSearch.search_flights(row["iataCode"], row["lowestPrice"])
-    
-    try:
-        # Populate the DataFrame with the flight data
-        data_df = FlightData.populate_flights_df(flight_data)
 
-        # Send a notification with the flight data
-        NotificationManager.send_message(data_df)
-    except:
-        pass
+    if flight_data == None:
+        print("No flights found\n")
+    else:
+        NotificationManager.send_message(flight_data)

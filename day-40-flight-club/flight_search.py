@@ -52,7 +52,8 @@ class FlightSearch:
             # pprint(data)
         except IndexError:
             # If no direct flights found, try to find flights with one stopover
-            self.search_params["max_stopovers"] = 1
+            # Note: this means max_stopovers = 4, to account for inbound and outbound
+            self.search_params["max_stopovers"] = 4
             try:
                 data = self._make_request(KIWI_SEARCH_ENDPOINT, self.search_params)["data"][0]
                 # pprint(data)
@@ -60,7 +61,7 @@ class FlightSearch:
                 return None
             pass
         
-        return self._create_flight_data(data, self.search_params["max_stopovers"])
+        return self._create_flight_data(data)
 
     def _make_request(self, url, params):
         try:
@@ -71,7 +72,15 @@ class FlightSearch:
             print(f"HTTPError: {params['fly_to']} cannot be proceesed.")
             return None
 
-    def _create_flight_data(self, data, stop_overs):
+    def _create_flight_data(self, data):
+        # Find the index number of the first return flight
+        for i, leg in enumerate(data["route"]):
+            if leg['return'] == 1:
+                return_flight_index = i
+
+        # Count number of legs in entire journye
+        stop_overs = len(data["route"]) / 2 - 1                
+    
         # Create FlightData object
         return FlightData(
             price=data["price"],
@@ -80,9 +89,9 @@ class FlightSearch:
             destination_city=data["cityCodeTo"],
             destination_airport=data["flyTo"],
             out_date=datetime.strptime(data["route"][0]["local_departure"], "%Y-%m-%dT%H:%M:%S.%fZ"),
-            return_date=datetime.strptime(data["route"][stop_overs + 1]["local_departure"], "%Y-%m-%dT%H:%M:%S.%fZ"),
+            return_date=datetime.strptime(data["route"][return_flight_index]["local_departure"], "%Y-%m-%dT%H:%M:%S.%fZ"),
             stop_overs=stop_overs,
-            via_city=data["route"][0]["cityCodeTo"] if stop_overs else None,
-            via_airport=data["route"][0]["flyTo"] if stop_overs else None,
+            via_city=data["route"][0]["cityCodeTo"] if stop_overs > 0 else None,
+            via_airport=data["route"][0]["flyTo"] if stop_overs > 0 else None,
         )
         

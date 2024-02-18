@@ -18,7 +18,7 @@ NotificationManager = NotificationManager()
 data = {
     "prices": [
         # {"city": "New York", "iataCode": "NYC", "lowestPrice": 200000, "id": 1},
-        {"city": "London", "iataCode": "LON", "lowestPrice": 200000, "id": 2},
+        {"city": "London", "iataCode": "LON", "lowestPrice": 150000, "id": 2},
         # {"city": "Hong Kong", "iataCode": "HKG", "lowestPrice": 50000, "id": 3},
         # {"city": "Bangkok", "iataCode": "BKK", "lowestPrice": 50000, "id": 4},
         # {"city": "Bali", "iataCode": "DPS", "lowestPrice": 600000, "id": 5},

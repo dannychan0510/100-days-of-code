@@ -78,7 +78,7 @@ class FlightSearch:
             if leg['return'] == 1:
                 return_flight_index = i
 
-        # Count number of legs in entire journye
+        # Count number of stop overs
         stop_overs = len(data["route"]) / 2 - 1                
     
         # Create FlightData object

@@ -96,14 +96,47 @@ def get_amazon_price(url):
     except Exception as e:
         return f"Error: {str(e)}"
 
+def get_amazon_title(url):
+    # Headers to mimic a browser request
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:126.0) Gecko/20100101 Firefox/126.0',
+        'Accept-Language': 'en-US'
+    }
+    
+    try:
+        # Send GET request to the URL
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # Raise an exception for bad status codes
+        
+        # Create BeautifulSoup object
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # Look for product title element
+        title_element = soup.find(id="productTitle")
+        
+        if title_element:
+            # Extract title and clean it
+            title = title_element.get_text().strip()
+            return title
+        else:
+            return "Title not found"
+            
+    except Exception as e:
+        return f"Error: {str(e)}"
+
 # Main program
 # URL of the Amazon product
 url = "https://www.amazon.com/dp/B075CYMYK6?ref_=cm_sw_r_cp_ud_ct_FM9M699VKHTT47YD50Q6&th=1"
 target_price = 100.00  # Set your desired price threshold
 
-# Get the price
+# Get the title and price
+title = get_amazon_title(url)
 price = get_amazon_price(url)
-print(f"Product price: {price}")
+print(f"""
+Product title: {title}
+
+Product price: {price}
+""")
 
 # Check if price is below threshold and send email if it is
 if isinstance(price, float) and price <= target_price:

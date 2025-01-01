@@ -35,7 +35,8 @@ def login_to_linkedin():
 
 def navigate_to_job_search():
     """Navigate to job search page and minimize chat"""
-    driver.get("https://www.linkedin.com/jobs/search/?f_LF=f_AL&geoId=102257491&keywords=python%20developer&location=London%2C%20England%2C%20United%20Kingdom&redirect=false&position=1&pageNum=0")
+    driver.get("https://www.linkedin.com/job" \
+           "s/search/?f_LF=f_AL&geoId=102257491&keywords=python%20developer&location=London%2C%20England%2C%20United%20Kingdom&redirect=false&position=1&pageNum=0")
     time.sleep(2)
     
     message_overlay = driver.find_element(By.CLASS_NAME, "msg-overlay-bubble-header__details")
